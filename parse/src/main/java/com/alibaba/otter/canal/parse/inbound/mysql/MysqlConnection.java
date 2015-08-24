@@ -104,13 +104,14 @@ public class MysqlConnection implements ErosaConnection {
     }
 
     public void dump(String binlogfilename, Long binlogPosition, SinkFunction func) throws IOException {
+        logger.info("---执行mysql dump,binlogfile:{},position:{}",binlogfilename,binlogPosition);
         updateSettings();
         sendBinlogDump(binlogfilename, binlogPosition);
         DirectLogFetcher fetcher = new DirectLogFetcher(connector.getReceiveBufferSize());
         fetcher.start(connector.getChannel());
         LogDecoder decoder = new LogDecoder(LogEvent.UNKNOWN_EVENT, LogEvent.ENUM_END_EVENT);
         LogContext context = new LogContext();
-        while (fetcher.fetch()) {
+        while (fetcher.fetch()) {//todo xnd 循环拉取
             LogEvent event = null;
             event = decoder.decode(fetcher, context);
 

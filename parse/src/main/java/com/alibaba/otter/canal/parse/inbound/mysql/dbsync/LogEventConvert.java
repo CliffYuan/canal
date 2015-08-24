@@ -91,6 +91,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
         }
 
         int eventType = logEvent.getHeader().getType();
+        logger.info("---解析parse,将LogEvent转化为Entry,eventType:{}",eventType);
         switch (eventType) {
             case LogEvent.ROTATE_EVENT:
                 binlogFileName = ((RotateLogEvent) logEvent).getFilename();

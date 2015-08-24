@@ -69,7 +69,7 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
 
         return false;
     }
-
+    //刷新数据到eventStore
     public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
                                                                                                            throws CanalSinkException,
                                                                                                            InterruptedException {
@@ -101,7 +101,7 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
             hasRowData |= (entry.getEntryType() == EntryType.ROWDATA);
             hasHeartBeat |= (entry.getEntryType() == EntryType.HEARTBEAT);
         }
-
+        logger.info("---sinkData(),保存数据到eventStore,共{}条",entrys.size());
         if (hasRowData) {
             // 存在row记录
             return doSink(events);
@@ -147,7 +147,7 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
         for (CanalEventDownStreamHandler<List<Event>> handler : getHandlers()) {
             events = handler.before(events);
         }
-
+        logger.info("---doSink(),eventStore.put(),直到添加成功为止,event.size={}",events.size());
         int fullTimes = 0;
         do {
             if (eventStore.tryPut(events)) {

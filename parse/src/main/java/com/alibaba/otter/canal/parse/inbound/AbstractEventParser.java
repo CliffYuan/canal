@@ -109,9 +109,9 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
     public AbstractEventParser(){
         // 初始化一下
         transactionBuffer = new EventTransactionBuffer(new TransactionFlushCallback() {
-
+            //todo xnd 将entry投递到EventStore中
             public void flush(List<CanalEntry.Entry> transaction) throws InterruptedException {
-                boolean successed = consumeTheEventAndProfilingIfNecessary(transaction);
+                boolean successed = consumeTheEventAndProfilingIfNecessary(transaction);//消费,投递到EventStore中
                 if (!running) {
                     return;
                 }
@@ -122,6 +122,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
 
                 LogPosition position = buildLastTranasctionPosition(transaction);
                 if (position != null) { // 可能position为空
+                    logger.info("---更新zk logPosition记录,LogPosition:{}",position);
                     logPositionManager.persistLogPosition(AbstractEventParser.this.destination, position);
                 }
             }
@@ -146,7 +147,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
                 ErosaConnection erosaConnection = null;
                 while (running) {
                     try {
-
+                        logger.info("---开始连接mysql,进行dump数据");
                         // 开始执行replication
                         // 1. 构造Erosa连接
                         erosaConnection = buildErosaConnection();
@@ -163,7 +164,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
                         if (startPosition == null) {
                             throw new CanalParseException("can't find start position for " + destination);
                         }
-                        logger.info("find start position : {}", startPosition.toString());
+                        logger.info("---从上一次获取binlog位置开始获取,find start position : {},mysql connection:{}", startPosition.toString(),erosaConnection);
                         // 重新链接，因为在找position过程中可能有状态，需要断开后重建
                         erosaConnection.reconnect();
 
@@ -173,7 +174,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
 
                             public boolean sink(EVENT event) {
                                 try {
-                                    CanalEntry.Entry entry = parseAndProfilingIfNecessary(event);
+                                    CanalEntry.Entry entry = parseAndProfilingIfNecessary(event);//parse解析
 
                                     if (!running) {
                                         return false;
@@ -181,7 +182,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
 
                                     if (entry != null) {
                                         exception = null; // 有正常数据流过，清空exception
-                                        transactionBuffer.add(entry);
+                                        transactionBuffer.add(entry);//todo xnd 添加到transactionBuffer中,并且刷新,刷新时将数据投递到EventStore中
                                         // 记录一下对应的positions
                                         this.lastPosition = buildLastPosition(entry);
                                         // 记录一下最后一次有数据的时间
@@ -231,6 +232,7 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
                             sendAlarm(destination, ExceptionUtils.getFullStackTrace(e));
                         }
                     } finally {
+                        logger.info("---mysql dump结束,关闭连接");
                         // 关闭一下链接
                         afterDump(erosaConnection);
                         try {
@@ -293,6 +295,13 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
         }
     }
 
+    /**
+     * 消费event 指将数据保存到eventStore
+     * @param entrys
+     * @return
+     * @throws CanalSinkException
+     * @throws InterruptedException
+     */
     protected boolean consumeTheEventAndProfilingIfNecessary(List<CanalEntry.Entry> entrys) throws CanalSinkException,
                                                                                            InterruptedException {
         long startTs = -1;

@@ -9,6 +9,8 @@ import java.util.Map;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
 import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -45,7 +47,7 @@ import com.google.common.collect.Maps;
  * @version 1.0.0
  */
 public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements CanalMetaManager {
-
+    private static final Logger logger = LoggerFactory.getLogger(ZooKeeperMetaManager.class);
     private static final String ENCODE = "UTF-8";
     private ZkClientx           zkClientx;
 
@@ -223,6 +225,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         }
 
         PositionRange positionRange = JsonUtils.unmarshalFromByte(data, PositionRange.class);
+        logger.info("---获取Position,path:{},data:{}",path,positionRange);
         return positionRange;
     }
 
@@ -244,7 +247,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         } catch (ZkNoNodeException e) {
             // ignore
         }
-
+        logger.info("---从zk中获取最近的一次batch,path:{}",path);
         if (CollectionUtils.isEmpty(nodes)) {
             return null;
         }

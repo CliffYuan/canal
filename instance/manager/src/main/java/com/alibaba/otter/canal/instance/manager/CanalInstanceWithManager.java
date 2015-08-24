@@ -216,6 +216,7 @@ public class CanalInstanceWithManager extends CanalInstanceSupport implements Ca
     protected void initMetaManager() {
         logger.info("init metaManager begin...");
         MetaMode mode = parameters.getMetaMode();
+        logger.info("---meta存储模式为:{},初始化metaManager",mode);
         if (mode.isMemory()) {
             metaManager = new MemoryMetaManager();
         } else if (mode.isZookeeper()) {
@@ -239,6 +240,7 @@ public class CanalInstanceWithManager extends CanalInstanceSupport implements Ca
     protected void initEventStore() {
         logger.info("init eventStore begin...");
         StorageMode mode = parameters.getStorageMode();
+        logger.info("---eventStore,存储模式为:{}",mode);
         if (mode.isMemory()) {
             MemoryEventStoreWithBuffer memoryEventStore = new MemoryEventStoreWithBuffer();
             memoryEventStore.setBufferSize(parameters.getMemoryStorageBufferSize());

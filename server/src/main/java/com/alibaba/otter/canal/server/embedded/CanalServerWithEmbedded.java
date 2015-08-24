@@ -32,7 +32,7 @@ import com.google.common.collect.MigrateMap;
 
 /**
  * 嵌入式版本实现
- * 
+ * 客户端调用,拉取消费消息
  * @author jianghang 2012-7-12 下午01:34:00
  * @author zebin.xuzb
  * @version 1.0.0
@@ -42,7 +42,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
     private static final Logger        logger = LoggerFactory.getLogger(CanalServerWithEmbedded.class);
     private Map<String, CanalInstance> canalInstances;
     // private Map<ClientIdentity, Position> lastRollbackPostions;
-    private CanalInstanceGenerator     canalInstanceGenerator;
+    private CanalInstanceGenerator     canalInstanceGenerator;// instance生成器
 
     public void start() {
         super.start();
@@ -130,7 +130,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
             }
             logger.info("subscribe successfully, {} with first position:{} ", clientIdentity, position);
         } else {
-            logger.info("subscribe successfully, use last cursor position:{} ", clientIdentity, position);
+            logger.info("subscribe successfully, {} use last cursor position:{} ", clientIdentity, position);
         }
 
         // 通知下订阅关系变化
@@ -438,6 +438,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      */
     private Events<Event> getEvents(CanalEventStore eventStore, Position start, int batchSize, Long timeout,
                                     TimeUnit unit) {
+        logger.info("---从{}获取Event消息",eventStore);
         if (timeout == null) {
             return eventStore.tryGet(start, batchSize);
         } else {
@@ -472,6 +473,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
 
     public void setCanalInstanceGenerator(CanalInstanceGenerator canalInstanceGenerator) {
         this.canalInstanceGenerator = canalInstanceGenerator;
+        logger.info("----设置CanalInstanceGenerator实例生成器:{}",canalInstanceGenerator);
     }
 
 }

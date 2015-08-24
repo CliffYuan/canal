@@ -27,7 +27,7 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
     private AtomicLong               putSequence   = new AtomicLong(INIT_SQEUENCE); // 代表当前put操作最后一次写操作发生的位置
     private AtomicLong               flushSequence = new AtomicLong(INIT_SQEUENCE); // 代表满足flush条件后最后一次数据flush的时间
 
-    private TransactionFlushCallback flushCallback;
+    private TransactionFlushCallback flushCallback;//刷新回调
 
     public EventTransactionBuffer(){
 
@@ -70,7 +70,7 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
                 break;
             case TRANSACTIONEND:
                 put(entry);
-                flush();
+                flush();//刷新这一次的
                 break;
             case ROWDATA:
                 put(entry);
