@@ -16,6 +16,8 @@ import com.alibaba.otter.canal.parse.inbound.TableMeta.FieldMeta;
 import com.alibaba.otter.canal.parse.inbound.mysql.MysqlConnection;
 import com.google.common.base.Function;
 import com.google.common.collect.MigrateMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 处理table meta解析和缓存
@@ -24,7 +26,7 @@ import com.google.common.collect.MigrateMap;
  * @version 1.0.0
  */
 public class TableMetaCache {
-
+    protected final Logger logger                  = LoggerFactory.getLogger(this.getClass());
     public static final String     COLUMN_NAME    = "COLUMN_NAME";
     public static final String     COLUMN_TYPE    = "COLUMN_TYPE";
     public static final String     IS_NULLABLE    = "IS_NULLABLE";
@@ -94,6 +96,7 @@ public class TableMetaCache {
     }
 
     private TableMeta getTableMeta0(String fullname) throws IOException {
+        logger.info("---获取表结构,{}",fullname);
         ResultSetPacket packet = connection.query("desc " + fullname);
         return new TableMeta(fullname, parserTableMeta(packet));
     }

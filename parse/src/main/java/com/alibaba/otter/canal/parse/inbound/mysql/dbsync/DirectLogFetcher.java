@@ -73,8 +73,8 @@ public class DirectLogFetcher extends LogFetcher {
             }
 
             // Fetching the first packet(may a multi-packet).
-            int netlen = getUint24(PACKET_LEN_OFFSET);
-            int netnum = getUint8(PACKET_SEQ_OFFSET);
+            int netlen = getUint24(PACKET_LEN_OFFSET);//62
+            int netnum = getUint8(PACKET_SEQ_OFFSET);//5
             if (!fetch0(NET_HEADER_SIZE, netlen)) {
                 logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
                 return false;

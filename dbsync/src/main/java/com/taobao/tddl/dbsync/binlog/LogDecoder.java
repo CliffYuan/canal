@@ -92,7 +92,7 @@ public final class LogDecoder {
         final int limit = buffer.limit();
 
         if (limit >= FormatDescriptionLogEvent.LOG_EVENT_HEADER_LEN) {
-            LogHeader header = new LogHeader(buffer, context.getFormatDescription());
+            LogHeader header = new LogHeader(buffer, context.getFormatDescription());//解析header头
 
             final int len = header.getEventLen();
             if (limit >= len) {
@@ -103,7 +103,7 @@ public final class LogDecoder {
                     buffer.limit(len);
                     try {
                         /* Decoding binary-log to event */
-                        event = decode(buffer, header, context);
+                        event = decode(buffer, header, context);//解析body
                     } catch (IOException e) {
                         if (logger.isWarnEnabled()) logger.warn("Decoding " + LogEvent.getTypeName(header.getType())
                                                                 + " failed from: " + context.getLogPosition(), e);
@@ -162,7 +162,7 @@ public final class LogDecoder {
                 logPosition.position = header.getLogPos();
                 return event;
             }
-            case LogEvent.TABLE_MAP_EVENT: {
+            case LogEvent.TABLE_MAP_EVENT: {//todo xnd 第一部,解析表
                 TableMapLogEvent mapEvent = new TableMapLogEvent(header, buffer, descriptionEvent);
                 /* updating position in context */
                 logPosition.position = header.getLogPos();

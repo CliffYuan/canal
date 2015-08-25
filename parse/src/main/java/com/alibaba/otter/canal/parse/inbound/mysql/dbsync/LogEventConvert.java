@@ -379,7 +379,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
                     tableError |= parseOneRow(rowDataBuilder, event, buffer, event.getChangeColumns(), true, tableMeta);
                 }
 
-                rowChangeBuider.addRowDatas(rowDataBuilder.build());
+                rowChangeBuider.addRowDatas(rowDataBuilder.build());//添加一行数据
             }
 
             RowChange rowChange = rowChangeBuider.build();
@@ -388,7 +388,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
                 logger.warn("table parser error : {}storeValue: {}", entry.toString(), rowChange.toString());
                 return null;
             } else {
-                Entry entry = createEntry(header, EntryType.ROWDATA, rowChangeBuider.build().toByteString());
+                Entry entry = createEntry(header, EntryType.ROWDATA, rowChangeBuider.build().toByteString());//创建entry对象
                 return entry;
             }
         } catch (Exception e) {
@@ -442,7 +442,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
             if (tableMeta != null && !tableError) {
                 // 处理file meta
                 fieldMeta = tableMeta.getFileds().get(i);
-                columnBuilder.setName(fieldMeta.getColumnName());
+                columnBuilder.setName(fieldMeta.getColumnName());//todo xnd 设置列信息
                 columnBuilder.setIsKey(fieldMeta.isKey());
                 // 增加mysql type类型,issue 73
                 columnBuilder.setMysqlType(fieldMeta.getColumnType());
@@ -568,7 +568,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
                                          columnBuilder.getIsNull() ? null : columnBuilder.getValue(),
                                          i));
             if (isAfter) {
-                rowDataBuilder.addAfterColumns(columnBuilder.build());
+                rowDataBuilder.addAfterColumns(columnBuilder.build());//添加列信息
             } else {
                 rowDataBuilder.addBeforeColumns(columnBuilder.build());
             }

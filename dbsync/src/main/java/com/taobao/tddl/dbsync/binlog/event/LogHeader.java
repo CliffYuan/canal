@@ -125,7 +125,7 @@ public final class LogHeader {
         type = buffer.getUint8(); // LogEvent.EVENT_TYPE_OFFSET;
         serverId = buffer.getUint32(); // LogEvent.SERVER_ID_OFFSET;
         eventLen = (int) buffer.getUint32(); // LogEvent.EVENT_LEN_OFFSET;
-
+        //todo 解析头 header
         if (descriptionEvent.binlogVersion == 1) {
             logPos = 0;
             flags = 0;

@@ -113,7 +113,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
                     throw new CanalParseException("Unsupported BinlogImage " + image);
                 }
             }
-
+            logger.info("---设置TableMetaCahe,即缓存表信息");
             tableMetaCache = new TableMetaCache(metaConnection);
             ((LogEventConvert) binlogParser).setTableMetaCache(tableMetaCache);
         }

@@ -162,7 +162,10 @@ public class AbstractCanalClientTest {
     }
 
     protected void printEntry(List<Entry> entrys) {
+        logger.info("==========================>entry start");
         for (Entry entry : entrys) {
+
+
             long executeTime = entry.getHeader().getExecuteTime();
             long delayTime = new Date().getTime() - executeTime;
 
@@ -231,6 +234,7 @@ public class AbstractCanalClientTest {
                 }
             }
         }
+        logger.info("==========================>entry end");
     }
 
     protected void printColumn(List<Column> columns) {
