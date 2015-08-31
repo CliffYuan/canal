@@ -110,7 +110,7 @@ public class MysqlConnection implements ErosaConnection {
         DirectLogFetcher fetcher = new DirectLogFetcher(connector.getReceiveBufferSize());
         fetcher.start(connector.getChannel());
         LogDecoder decoder = new LogDecoder(LogEvent.UNKNOWN_EVENT, LogEvent.ENUM_END_EVENT);
-        LogContext context = new LogContext();
+        LogContext context = new LogContext();//默认5.0版本,binlog 即是v4版本
         while (fetcher.fetch()) {//todo xnd 循环拉取
             LogEvent event = null;
             event = decoder.decode(fetcher, context);
@@ -138,7 +138,7 @@ public class MysqlConnection implements ErosaConnection {
 
         logger.info("COM_BINLOG_DUMP with position:{}", binlogDumpCmd);
         HeaderPacket binlogDumpHeader = new HeaderPacket();
-        binlogDumpHeader.setPacketBodyLength(cmdBody.length);
+        binlogDumpHeader.setPacketBodyLength(cmdBody.length);//
         binlogDumpHeader.setPacketSequenceNumber((byte) 0x00);
         PacketManager.write(connector.getChannel(), new ByteBuffer[] { ByteBuffer.wrap(binlogDumpHeader.toBytes()),
                 ByteBuffer.wrap(cmdBody) });

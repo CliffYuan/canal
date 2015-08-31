@@ -2,6 +2,8 @@ package com.taobao.tddl.dbsync.binlog.event;
 
 import com.taobao.tddl.dbsync.binlog.LogBuffer;
 import com.taobao.tddl.dbsync.binlog.LogEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Common-Header, documented in the table @ref Table_common_header "below",
@@ -55,13 +57,14 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  * </table>
  * Summing up the numbers above, we see that the total size of the common header
  * is 19 bytes.
- * 
+ *
+ * Event 基础头日志
  * @see mysql-5.1.60/sql/log_event.cc
  * @author <a href="mailto:changyuan.lh@taobao.com">Changyuan.lh</a>
  * @version 1.0
  */
 public final class LogHeader {
-
+    private static final Logger logger  = LoggerFactory.getLogger(LogHeader.class);
     protected final int type;
 
     /**
@@ -121,6 +124,7 @@ public final class LogHeader {
     }
 
     public LogHeader(LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+        logger.info("---binlog-header-解析开始");
         when = buffer.getUint32();
         type = buffer.getUint8(); // LogEvent.EVENT_TYPE_OFFSET;
         serverId = buffer.getUint32(); // LogEvent.SERVER_ID_OFFSET;
@@ -160,6 +164,7 @@ public final class LogHeader {
 
         flags = buffer.getUint16(); // LogEvent.FLAGS_OFFSET
         if ((type == LogEvent.FORMAT_DESCRIPTION_EVENT) || (type == LogEvent.ROTATE_EVENT)) {
+            //在 Magic Number 之后跟着的是一个格式描述事件（Format Description Event），其实这只是在 v4 版本中的称呼，在以前的版本里面叫起始事件（Start Event）。
             /*
              * These events always have a header which stops here (i.e. their
              * header is FROZEN).
@@ -175,6 +180,7 @@ public final class LogHeader {
              */
 
             if (type == LogEvent.FORMAT_DESCRIPTION_EVENT) {
+                logger.info("--- LogEvent.FORMAT_DESCRIPTION_EVENT,解析格式描述事件");
                 int commonHeaderLen = buffer.getUint8(FormatDescriptionLogEvent.LOG_EVENT_MINIMAL_HEADER_LEN
                                                       + FormatDescriptionLogEvent.ST_COMMON_HEADER_LEN_OFFSET);
                 buffer.position(commonHeaderLen + FormatDescriptionLogEvent.ST_SERVER_VER_OFFSET);
@@ -189,6 +195,7 @@ public final class LogHeader {
 
                 processCheckSum(buffer);
             }
+            logger.info("--- LogEvent.ROTATE_EVENT,解析binlog文件切换事件");
             return;
         }
 

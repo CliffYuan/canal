@@ -328,6 +328,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         MysqlConnection mysqlConnection = (MysqlConnection) connection;
         LogPosition logPosition = logPositionManager.getLatestIndexBy(destination);
         if (logPosition == null) {// 找不到历史成功记录
+            logger.info("---{}未消费过,从头开始,{}",destination,logPositionManager);
             EntryPosition entryPosition = null;
             if (masterInfo != null && mysqlConnection.getConnector().getAddress().equals(masterInfo.getAddress())) {
                 entryPosition = masterPosition;
@@ -551,6 +552,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
                 throw new CanalParseException("command : 'show master status' has an error! pls check. you need (at least one of) the SUPER,REPLICATION CLIENT privilege(s) for this operation");
             }
             EntryPosition endPosition = new EntryPosition(fields.get(0), Long.valueOf(fields.get(1)));
+            logger.info("---查询当前binlog的位置(show master status):{},{}",fields.get(0), Long.valueOf(fields.get(1)));
             return endPosition;
         } catch (IOException e) {
             throw new CanalParseException("command : 'show master status' has an error!", e);
@@ -568,6 +570,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
                 throw new CanalParseException("command : 'show binlog events limit 1' has an error! pls check. you need (at least one of) the SUPER,REPLICATION CLIENT privilege(s) for this operation");
             }
             EntryPosition endPosition = new EntryPosition(fields.get(0), Long.valueOf(fields.get(1)));
+            logger.info("---查询当前binlog的位置(show binlog events limit 1):{},{}",fields.get(0), Long.valueOf(fields.get(1)));
             return endPosition;
         } catch (IOException e) {
             throw new CanalParseException("command : 'show binlog events limit 1' has an error!", e);

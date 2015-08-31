@@ -51,7 +51,8 @@ public final class RotateLogEvent extends LogEvent {
      * <p>
      * Variable data part:
      * <ul>
-     * <li>The name of the next binary log. The filename is not null-terminated.
+     * <li>filename长度=event size 减去 fixed data part.
+     * The name of the next binary log. The filename is not null-terminated.
      * Its length is the event size minus the size of the fixed parts.</li>
      * </ul>
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log

@@ -122,8 +122,8 @@ public abstract class AbstractEventParser<EVENT> extends AbstractCanalLifeCycle 
 
                 LogPosition position = buildLastTranasctionPosition(transaction);
                 if (position != null) { // 可能position为空
-                    logger.info("---更新zk logPosition记录,LogPosition:{}",position);
-                    logPositionManager.persistLogPosition(AbstractEventParser.this.destination, position);
+                    logger.info("---更新zk logPosition记录,表示已经解析到那了,LogPosition:{}",position);
+                    logPositionManager.persistLogPosition(AbstractEventParser.this.destination, position);//下次启动的时候从这里开始解析
                 }
             }
         });

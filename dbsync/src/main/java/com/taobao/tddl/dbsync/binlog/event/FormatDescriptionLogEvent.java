@@ -76,11 +76,11 @@ public final class FormatDescriptionLogEvent extends StartLogEventV3 {
      * FORMAT_DESCRIPTION_EVENT and ROTATE_EVENT (those have a header of size
      * LOG_EVENT_MINIMAL_HEADER_LEN).
      */
-    protected final int       commonHeaderLen;
+    protected final int       commonHeaderLen;//基础头的长度
     protected int             numberOfEventTypes;
 
     /** The list of post-headers' lengthes */
-    protected final short[]   postHeaderLen;
+    protected final short[]   postHeaderLen;//event type 协议头的长度
     protected int[]           serverVersionSplit                  = new int[3];
 
     public FormatDescriptionLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)

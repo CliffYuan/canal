@@ -73,15 +73,15 @@ public class DirectLogFetcher extends LogFetcher {
             }
 
             // Fetching the first packet(may a multi-packet).
-            int netlen = getUint24(PACKET_LEN_OFFSET);//62
-            int netnum = getUint8(PACKET_SEQ_OFFSET);//5
+            int netlen = getUint24(PACKET_LEN_OFFSET);//数据包长度
+            int netnum = getUint8(PACKET_SEQ_OFFSET);//数据包seq
             if (!fetch0(NET_HEADER_SIZE, netlen)) {
                 logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
                 return false;
             }
 
             // Detecting error code.
-            final int mark = getUint8(NET_HEADER_SIZE);
+            final int mark = getUint8(NET_HEADER_SIZE);//1字节 值为[00], 是binlog event的特征标志
             if (mark != 0) {
                 if (mark == 255) // error from master
                 {
@@ -108,8 +108,8 @@ public class DirectLogFetcher extends LogFetcher {
             }
 
             // The first packet is a multi-packet, concatenate the packets.
-            while (netlen == MAX_PACKET_LENGTH) {
-                if (!fetch0(0, NET_HEADER_SIZE)) {
+            while (netlen == MAX_PACKET_LENGTH) {//对超大packet的支持,16MB-1字节为第一段数据
+                if (!fetch0(0, NET_HEADER_SIZE)) {//todo xnd 这个地方为啥是0,0不就和上面已经获取的覆盖了吗?
                     logger.warn("Reached end of input stream while fetching header");
                     return false;
                 }

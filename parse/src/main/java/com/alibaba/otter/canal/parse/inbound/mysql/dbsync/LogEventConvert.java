@@ -321,7 +321,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
             if (nameBlackFilter != null && nameBlackFilter.filter(fullname)) {
                 return null;
             }
-
+            logger.info("---binlog-解析RowsLogEvent,name:{}",fullname);
             EventType eventType = null;
             int type = event.getHeader().getType();
             if (LogEvent.WRITE_ROWS_EVENT_V1 == type || LogEvent.WRITE_ROWS_EVENT == type) {

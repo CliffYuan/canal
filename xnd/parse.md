@@ -31,3 +31,14 @@ EntryType=TRANSACTIONEND
 
 
 
+
+##### insert操作binlog日志例子(innodb引擎)
+以一条insert语句为例，包含4个事件：
+1)TABLE_MAP_EVENT
+2)QUERY_EVENT  (begin)  --事务开始
+3)WRITE_ROWS_EVENT
+4)XID_EVENT             --事务结束
+
+
+
+

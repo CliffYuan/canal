@@ -152,7 +152,7 @@ public abstract class RowsLogEvent extends LogEvent {
         }
 
         buffer.position(commonHeaderLen + postHeaderLen + headerLen);
-        columnLen = (int) buffer.getPackedLong();
+        columnLen = (int) buffer.getPackedLong();//列的长度
         columns = buffer.getBitmap(columnLen);
 
         if (header.type == UPDATE_ROWS_EVENT_V1 || header.type == UPDATE_ROWS_EVENT) {

@@ -89,12 +89,13 @@ public final class LogDecoder {
      * <code>null</code> if buffer is not including a full event.
      */
     public LogEvent decode(LogBuffer buffer, LogContext context) throws IOException {
+        logger.info("---解析读取到的buffer");
         final int limit = buffer.limit();
 
-        if (limit >= FormatDescriptionLogEvent.LOG_EVENT_HEADER_LEN) {
+        if (limit >= FormatDescriptionLogEvent.LOG_EVENT_HEADER_LEN) {//大于19个字节,一个事件头有 19 字节，依次排列为四字节的时间戳、一字节的当前事件类型、四字节的服务端 ID、四字节的当前事件长度描述、四字节的下个事件位置（方便跳转）以及两字节的标识。
             LogHeader header = new LogHeader(buffer, context.getFormatDescription());//解析header头
 
-            final int len = header.getEventLen();
+            final int len = header.getEventLen();//事件的数据包大小
             if (limit >= len) {
                 LogEvent event;
 
