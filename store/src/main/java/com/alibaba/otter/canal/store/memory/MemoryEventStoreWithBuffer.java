@@ -56,8 +56,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
     private Condition         notFull       = lock.newCondition();
     private Condition         notEmpty      = lock.newCondition();
 
-    private BatchMode         batchMode     = BatchMode.ITEMSIZE;           // 默认为内存大小模式
-    private boolean           ddlIsolation  = false;
+    private BatchMode         batchMode     = BatchMode.ITEMSIZE;           // 默认为内存大小模式 ---应该是默认为binlog event 条数为模式 add xnd
+    private boolean           ddlIsolation  = false;                        // 默认为跳过ddl语句 add xnd
 
     public MemoryEventStoreWithBuffer(){
 

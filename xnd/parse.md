@@ -40,5 +40,65 @@ EntryType=TRANSACTIONEND
 4)XID_EVENT             --事务结束
 
 
+##### PB对象之间的关系
+Entry{
+    Header,
+    EntryType,//表示是事务标示还是数据
+    Value;
+}
+Header{
+    EventType,//insert,update等
+    ....
+}
+
+RowChange{
+    RowData,
+    EventType
+}
+
+RowData{
+    Column,
+    Column,
+}
+
+message Column {
+	name,
+	value,
+	iskey,
+	updated
+}
+
+/**打散后的事件类型，主要用于标识事务的开始，变更数据，结束**/
+enum EntryType{
+	TRANSACTIONBEGIN 		=		1;
+	ROWDATA					=		2;
+	TRANSACTIONEND			=		3;
+	/** 心跳类型，内部使用，外部暂不可见，可忽略 **/
+	HEARTBEAT				=		4;
+}
+
+/** 事件类型 **/
+enum EventType {
+    INSERT 		= 		1;//插入
+    UPDATE 		= 		2;//更新
+    DELETE 		= 		3;//删除
+    CREATE		= 		4;
+    ALTER		= 		5;
+    ERASE		= 		6;
+    QUERY		=		7;
+    TRUNCATE	=		8;
+    RENAME 		= 		9;
+    /**CREATE INDEX**/
+    CINDEX		= 		10;
+    DINDEX 		= 		11;
+}
+
+#### 解析body
+LogDecoder.decode()解析
+
+
+
+
+
 
 

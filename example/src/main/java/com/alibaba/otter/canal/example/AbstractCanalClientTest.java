@@ -138,7 +138,7 @@ public class AbstractCanalClientTest {
     private void printSummary(Message message, long batchId, int size) {
         long memsize = 0;
         for (Entry entry : message.getEntries()) {
-            memsize += entry.getHeader().getEventLength();
+            memsize += entry.getHeader().getEventLength();//计算占用内存大小
         }
 
         String startPosition = null;
@@ -218,7 +218,7 @@ public class AbstractCanalClientTest {
                             entry.getHeader().getTableName(), eventType,
                             String.valueOf(entry.getHeader().getExecuteTime()), String.valueOf(delayTime) });
 
-                if (eventType == EventType.QUERY || rowChage.getIsDdl()) {
+                if (eventType == EventType.QUERY || rowChage.getIsDdl()) { //todo 当binlog=mixed 或者 binlog=statement 时候,rowChage.getIsDdl()==true add xnd
                     logger.info(" sql ----> " + rowChage.getSql() + SEP);
                     continue;
                 }

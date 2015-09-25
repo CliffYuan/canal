@@ -13,3 +13,15 @@ body length(SequenceNumber) | COM_BINLOG_DUMP
     3 MySQL 4.0.2 - < 5.0.0
     4 MySQL 5.0.0+
 3.
+
+
+
+##### 重点关注EventType
+
+1.QUERY_EVENT
+    binlog模式为statement的sql和ddl语句。
+
+2.binlog模式为Row才有如下3中event
+WRITE_ROWS_EVENT
+UPDATE_ROWS_EVENT
+DELETE_ROWS_EVENT

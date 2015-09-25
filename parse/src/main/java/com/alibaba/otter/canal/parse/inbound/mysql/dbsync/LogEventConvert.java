@@ -85,41 +85,54 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
     // 是否跳过table相关的解析异常,比如表不存在或者列数量不匹配,issue 92
     private boolean                     filterTableError    = false;
 
+    /**
+     * Entry只有3种类型，
+     *     TRANSACTIONBEGIN 		=		1;
+     *     ROWDATA					=		2;
+     *     TRANSACTIONEND			=		3;
+     *
+     * ROWDATA
+     *
+     *
+     * @param logEvent
+     * @return
+     * @throws CanalParseException
+     */
     public Entry parse(LogEvent logEvent) throws CanalParseException {
         if (logEvent == null || logEvent instanceof UnknownLogEvent) {
             return null;
         }
 
         int eventType = logEvent.getHeader().getType();
-        logger.info("---解析parse,将LogEvent转化为Entry,eventType:{}",eventType);
+        logger.info("---解析parse,将LogEvent转化为Entry(PB对象格式),mysql eventType:{}",eventType);
         switch (eventType) {
-            case LogEvent.ROTATE_EVENT:
+            case LogEvent.ROTATE_EVENT://每个binlog文件的结束event时候，如Flush logs、大小上线时产生的类型。
                 binlogFileName = ((RotateLogEvent) logEvent).getFilename();
                 break;
-            case LogEvent.QUERY_EVENT:
+            case LogEvent.QUERY_EVENT://一般执行的查询。                    这个才有可能是DDL或者statement模式的sql
                 return parseQueryEvent((QueryLogEvent) logEvent);
-            case LogEvent.XID_EVENT:
+            case LogEvent.XID_EVENT://事务提交的信息。
                 return parseXidEvent((XidLogEvent) logEvent);
-            case LogEvent.TABLE_MAP_EVENT:
+            case LogEvent.TABLE_MAP_EVENT:                              //row模式特有 row-based binary logging
                 break;
             case LogEvent.WRITE_ROWS_EVENT_V1:
-            case LogEvent.WRITE_ROWS_EVENT:
+            case LogEvent.WRITE_ROWS_EVENT:                             //row模式特有 row-based binary logging
                 return parseRowsEvent((WriteRowsLogEvent) logEvent);
             case LogEvent.UPDATE_ROWS_EVENT_V1:
-            case LogEvent.UPDATE_ROWS_EVENT:
+            case LogEvent.UPDATE_ROWS_EVENT:                             //row模式特有 row-based binary logging
                 return parseRowsEvent((UpdateRowsLogEvent) logEvent);
             case LogEvent.DELETE_ROWS_EVENT_V1:
-            case LogEvent.DELETE_ROWS_EVENT:
+            case LogEvent.DELETE_ROWS_EVENT:                              //row模式特有 row-based binary logging
                 return parseRowsEvent((DeleteRowsLogEvent) logEvent);
             case LogEvent.ROWS_QUERY_LOG_EVENT:
                 return parseRowsQueryEvent((RowsQueryLogEvent) logEvent);
             case LogEvent.ANNOTATE_ROWS_EVENT:
                 return parseAnnotateRowsEvent((AnnotateRowsEvent) logEvent);
-            case LogEvent.USER_VAR_EVENT:
+            case LogEvent.USER_VAR_EVENT://自定义变量。
                 return parseUserVarLogEvent((UserVarLogEvent) logEvent);
-            case LogEvent.INTVAR_EVENT:
+            case LogEvent.INTVAR_EVENT://Auto_increment信息。
                 return parseIntrvarLogEvent((IntvarLogEvent) logEvent);
-            case LogEvent.RAND_EVENT:
+            case LogEvent.RAND_EVENT://随机数种子。
                 return parseRandLogEvent((RandLogEvent) logEvent);
             default:
                 break;
@@ -239,10 +252,12 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
                 rowChangeBuider.setIsDdl(true);
             }
             rowChangeBuider.setSql(queryString);
+            logger.info("#### canal,两种可能，一种是ddl语句，一种是binlog为statement模式，sql:{}",queryString);
             if (StringUtils.isNotEmpty(event.getDbName())) {// 可能为空
                 rowChangeBuider.setDdlSchemaName(event.getDbName());
             }
             rowChangeBuider.setEventType(result.getType());
+
             return createEntry(header, EntryType.ROWDATA, rowChangeBuider.build().toByteString());
         }
     }

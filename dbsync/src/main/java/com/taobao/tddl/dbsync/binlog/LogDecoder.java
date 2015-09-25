@@ -155,6 +155,7 @@ public final class LogDecoder {
                 QueryLogEvent event = new QueryLogEvent(header, buffer, descriptionEvent);
                 /* updating position in context */
                 logPosition.position = header.getLogPos();
+                logger.info("###canal--解析binlog,QUERY_EVENT:"+event.getQuery());
                 return event;
             }
             case LogEvent.XID_EVENT: {

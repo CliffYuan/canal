@@ -1,0 +1,11 @@
+
+
+1)binlog分类
+    binlog format分为3种:ROW,STATEMENT,MIXED
+
+2)ROW模式独有的event
+    TABLE_MAP_EVENT
+    WRITE_ROWS_EVENT
+    UPDATE_ROWS_EVENT
+    DELETE_ROWS_EVENT
+
